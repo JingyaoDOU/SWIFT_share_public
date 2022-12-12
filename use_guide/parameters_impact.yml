@@ -1,0 +1,78 @@
+# Define the system of units to use internally.
+InternalUnitSystem:
+    UnitMass_in_cgs:        5.97240e27        # Sets Earth mass = 5.972
+    UnitLength_in_cgs:      6.371e8        # Sets Earth radius = 6.371
+    UnitVelocity_in_cgs:    6.371e8         # Sets time in seconds
+    UnitCurrent_in_cgs:     1.0           # Amperes
+    UnitTemp_in_cgs:        1.0           # Kelvin
+
+# Parameters related to the initial conditions
+InitialConditions:      
+    file_name:  ./snapshot_swift_impact_05715_0468_5e4_9d7_055_100box.hdf5      # The initial conditions file to read
+    periodic:   0                       # Are we running with periodic ICs?
+
+# Parameters governing the time integration
+TimeIntegration:
+    time_begin:     0                   # The starting time of the simulation (in internal units).
+    time_end:       72000               # The end time of the simulation (in internal units).
+    dt_min:         0.0001              # The minimal time-step size of the simulation (in internal units).
+    dt_max:         1000                # The maximal time-step size of the simulation (in internal units).
+
+# Parameters governing the snapshots
+Snapshots:
+    basename:           snapshot    # Common part of the name of output files
+    time_first:         0               # Time of the first output (in internal units)
+    delta_time:         100            # Time difference between consecutive outputs (in internal units)
+    subdir:             ./output
+
+# Parameters governing the conserved quantities statistics
+Statistics:
+    time_first: 0                       # Time of the first output (in internal units)
+    delta_time: 1000                    # Time between statistics output
+
+# Parameters controlling restarts
+Restarts:
+    enable:         1                   # Whether to enable dumping restarts at fixed intervals.
+    save:           1                   # Whether to save copies of the previous set of restart files (named .prev)
+    onexit:         1                   # Whether to dump restarts on exit (*needs enable*)
+    subdir:         ./RESTART          # Name of subdirectory for restart files.
+    basename:       Rfile              # Prefix used in naming restart files.
+    delta_hours:    0.5                   # Decimal hours between dumps of restart files.
+
+# Parameters for the hydrodynamics scheme
+SPH:
+    resolution_eta:     1.2348          # Target smoothing length in units of the mean inter-particle separation (1.2348 == 48Ngbs with the cubic spline kernel).
+    delta_neighbours:   0.1             # The tolerance for the targetted number of neighbours.
+    CFL_condition:      0.2             # Courant-Friedrich-Levy condition for time integration.
+    h_max:              0.08            # Maximal allowed smoothing length (in internal units).
+    viscosity_alpha:    1.5             # Override for the initial value of the artificial viscosity.
+
+# Parameters for the self-gravity scheme
+Gravity:
+    eta:                            0.025       # Constant dimensionless multiplier for time integration.
+    MAC:                            adaptive    # Choice of mulitpole acceptance criterion: 'adaptive' OR 'geometric'.
+    epsilon_fmm:                    0.001       # Tolerance parameter for the adaptive multipole acceptance criterion.
+    theta_cr:                       0.5         # Opening angle for the purely gemoetric criterion.
+    max_physical_baryon_softening:  0.05        # Physical softening length (in internal units).
+    use_tree_below_softening:       0
+
+DomainDecomposition:
+    trigger:        0.1                 # Fractional (<1) CPU time difference between MPI ranks required to trigger a new decomposition, or number of steps (>1) between decompositions
+    adaptive:         0
+
+# Parameters for the task scheduling
+Scheduler:
+    max_top_level_cells:    16          # Maximal number of top-level cells in any dimension. The nu
+    cell_split_size:        400         # Maximal number of particles per cell (400 is the default value).
+    tasks_per_cell:         2.5         # The average number of tasks per cell. If not large enough the simulation will fail (means guess...)
+    links_per_tasks:        20 
+    mpi_message_limit:      4096        
+    nr_queues:              28
+
+# Parameters related to the equation of state
+EoS:
+    # Select which planetary EoS material(s) to enable for use.
+    planetary_use_ANEOS_forsterite:       1     #  material id 400
+    planetary_use_ANEOS_iron:             1     #  material ID 401
+    planetary_ANEOS_forsterite_table_file:      ./ANEOS_forsterite_S19.txt
+    planetary_ANEOS_iron_table_file:            ./ANEOS_iron_S20.txt
